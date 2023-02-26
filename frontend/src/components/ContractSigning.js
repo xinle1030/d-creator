@@ -24,6 +24,36 @@ const ContractSigning = (props) => {
   const [role, setRole] = useState("");
   const history = useHistory();
 
+  const instantiateContract = async () => {
+
+    console.log("instantiating contract")
+       try {
+      const response = await axios.put(
+        process.env.REACT_APP_API_URL +
+          `/api/creator-contract/` +
+          props.contractData._id + `/instantiate`
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+    const signContract = async () => {
+
+    console.log("signing contract")
+       try {
+      const response = await axios.put(
+        process.env.REACT_APP_API_URL +
+          `/api/creator-contract/` +
+          props.contractData._id + `/sign`
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
     useEffect(() => {
       if (userInfoFromStorage) {
         setRole(userInfoFromStorage.role);
@@ -38,7 +68,7 @@ const ContractSigning = (props) => {
       if (data?.status === 'agreed'){
         return (
           <div>
-            <Button color="success" onClick={() => {}}>
+            <Button color="success" onClick={instantiateContract}>
               Instantiate Contract
             </Button>
             <FormText color="muted">
@@ -83,7 +113,7 @@ const ContractSigning = (props) => {
               );
             } else if (data?.status === 'initiated') {
               return(<div>
-                <Button color="success" onClick={() => {}}>
+                <Button color="success" onClick={signContract}>
                   Sign Contract
                 </Button>
                 <FormText color="muted">
