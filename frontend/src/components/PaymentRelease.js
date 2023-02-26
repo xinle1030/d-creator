@@ -31,6 +31,20 @@ const PaymentRelease = (props) => {
       setData(props.contractData);
     }, [props.contractData, userInfoFromStorage]);
 
+        const releasePayment = async () => {
+          console.log("Release payment")
+       try {
+      const response = await axios.put(
+        process.env.REACT_APP_API_URL +
+          `/api/creator-contract/` +
+          props.contractData._id + `/payment`
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+    }
+
   const customizedField = () => {
     console.log(role);
     console.log(data?.status);
@@ -38,7 +52,7 @@ const PaymentRelease = (props) => {
       if (data?.status === 'inactive'){
         return (
           <div>
-            <Button color="success" onClick={() => {}}>
+            <Button color="success" onClick={releasePayment}>
               Release Payment
             </Button>
             <FormText color="muted">
