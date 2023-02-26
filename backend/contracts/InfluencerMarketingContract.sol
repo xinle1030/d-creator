@@ -1,70 +1,81 @@
 pragma solidity >=0.4.22 <0.9.0;
 
+import './KOLCoin.sol';
+
 contract InfluencerMarketingContract {
+
+    address public owner;
+    string public currContractRef;
+    ContractDetails public currentContract;
+    address payable public currBrandCom;
+    address payable public currInfluencer;
+    KOLCoin public kolCoin;
+
+    struct ContractDetails {
+        address payable brandCom;
+        address payable influencer;
+        uint contractValue;
+        bool contractTerminated;
+        bool brandComApproved;
+        bool influencerApproved;
+    }
+
+    constructor(KOLCoin _kolCoin) {
+        kolCoin = _kolCoin;
+        owner = msg.sender;
+    }
     
-    bytes32 public contractRef;
-    address payable public brandCom;
-    address payable public influencer;
-    uint public contractDuration;
-    uint public contractValue;
-    bool public contractTerminated;
-    bool public brandComApproved;
-    bool public influencerApproved;
+    //id to contract
+    mapping(string => ContractDetails) private refToContractDetails;
     
     modifier onlybrandCom() {
-        require(msg.sender == brandCom, "Only brand company can perform this action.");
+        require(msg.sender == currBrandCom, "Only brand company can perform this action.");
         _;
     }
     
     modifier onlyInfluencer() {
-        require(msg.sender == influencer, "Only influencer can perform this action.");
+        require(msg.sender == currInfluencer, "Only influencer can perform this action.");
         _;
     }
-    
-    constructor(){
-        brandCom = payable(msg.sender);
+
+    function buildContract(string memory _contractRef, address _brandCom, address _influencer, uint _value) public payable{
+        refToContractDetails[_contractRef] = ContractDetails({
+        brandCom: payable(_brandCom),
+        influencer: payable(_influencer),
+        contractValue: _value,
+        contractTerminated: false,
+        brandComApproved: false,
+        influencerApproved: false
+        });
     }
 
-    function buildContract(bytes32 _contractRef, address payable _influencer, uint _duration, uint _value) public {
-        contractRef = _contractRef;
-        influencer = _influencer;
-        contractDuration = _duration;
-        contractValue = _value;
-        contractTerminated = false;
-        brandComApproved = false;
-        influencerApproved = false;
+    function setCurrContract(string memory _contractRef) public{
+        currContractRef = _contractRef;
+        currentContract = refToContractDetails[currContractRef];
+        currBrandCom = currentContract.brandCom;
+        currInfluencer = currentContract.influencer;
     }
     
     function approveContract() public {
-        if (msg.sender == brandCom) {
-            brandComApproved = true;
-        } else if (msg.sender == influencer) {
-            influencerApproved = true;
-        }
-        if (brandComApproved && influencerApproved) {
-            contractTerminated = false;
+        if (msg.sender == currBrandCom) {
+            refToContractDetails[currContractRef].brandComApproved = true;
+        } else if (msg.sender == currInfluencer) {
+            refToContractDetails[currContractRef].influencerApproved = true;
         }
     }
     
-    function terminateContract() public onlybrandCom {
-        contractTerminated = true;
-        influencer.transfer(address(this).balance);
-    }
-    
-    function submitWork() public onlyInfluencer payable {
-        require(!contractTerminated, "Contract has been terminated.");
-        require(msg.value == contractValue, "Invalid payment amount.");
-        require(block.timestamp < contractDuration, "Contract has expired.");
+    function submitWork() public onlyInfluencer view{
+        require(!currentContract.contractTerminated, "Contract has been terminated.");
         // Perform work
     }
     
-    function releasePayment() public onlybrandCom {
-        require(!contractTerminated, "Contract has been terminated.");
-        influencer.transfer(address(this).balance);
+    function releasePayment(uint _amount) public onlybrandCom {
+        require(!currentContract.contractTerminated, "Contract has been terminated.");
+        kolCoin.transferFrom(msg.sender, address(this), _amount);
     }
     
-    function getContractDetails() public view returns (bytes32, address payable, address payable, uint, uint, bool, bool, bool) {
-        return (contractRef, brandCom, influencer, contractDuration, contractValue, contractTerminated, brandComApproved, influencerApproved);
+    function getContractDetailsByRef(string memory contractRef) public view returns (ContractDetails memory) {
+        return refToContractDetails[contractRef];
     }
     
 }
