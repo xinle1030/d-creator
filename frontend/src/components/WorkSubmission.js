@@ -37,7 +37,17 @@ const WorkSubmission = (props) => {
     }, [props.contractData, userInfoFromStorage]);
 
     const approveWork = async () => {
-      
+          console.log("approve submitted work")
+       try {
+      const response = await axios.put(
+        process.env.REACT_APP_API_URL +
+          `/api/creator-contract/` +
+          props.contractData._id + `/approve`
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
     }
 
       const submitWork = async () => {
