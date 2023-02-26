@@ -145,6 +145,7 @@ class Header extends React.Component {
         >
           <ModalBody>
             <AuthForm
+             walletAdrHash={this.props.account ? this.props.account : '-'}
               handleModalClose={this.toggle}
               authState={this.state.authState}
               onChangeAuthState={this.handleAuthState}
