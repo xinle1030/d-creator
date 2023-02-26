@@ -31,7 +31,7 @@ if (typeof web3 !== "undefined") {
   var web3 = new Web3(new Web3.providers.HttpProvider(provider));
 }
 
-const NETWORK_ID = "5";
+const NETWORK_ID = "1422";
 const influencerMarketingContract = JSON.parse(
   fs.readFileSync("./build/contracts/InfluencerMarketingContract.json", "utf8")
 );
