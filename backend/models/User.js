@@ -19,6 +19,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  walletAdrHash: {
+    type: String,
+  },
   role: {
     type: String,
     required: true,
