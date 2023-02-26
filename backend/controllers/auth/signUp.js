@@ -11,6 +11,7 @@ module.exports = (req, res) => {
     name: req.body.name,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
+    walletAdrHash: req.body.walletAdrHash,
     role: req.body.role,
   });
 
