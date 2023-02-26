@@ -15,6 +15,7 @@ const AuthForm = (props) => {
     username: '',
     role: '',
     password: '',
+    walletAdrHash: props.walletAdrHash,
   });
 
   const dispatch = useDispatch();
