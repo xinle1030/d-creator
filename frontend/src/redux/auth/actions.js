@@ -61,7 +61,8 @@ export const signup = (userData) => async (dispatch) => {
     "name": userData.name,
     "email": userData.email,
     "password": userData.password,
-    "role": userData.role
+    "role": userData.role,
+    "walletAdrHash": userData.walletAdrHash
   }
 
   try {
