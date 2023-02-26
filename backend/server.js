@@ -31,20 +31,29 @@ if (typeof web3 !== "undefined") {
   var web3 = new Web3(new Web3.providers.HttpProvider(provider));
 }
 
-// Load PandaCoin smart contract ABI and create contract instance
-// const pandaCoinContract = JSON.parse(
-//   fs.readFileSync("./build/contracts/PandaCoin.json", "utf8")
-// );
-// const CONTRACT_ABI = pandaCoinContract.abi;
+const NETWORK_ID = "5";
+const influencerMarketingContract = JSON.parse(
+  fs.readFileSync("./build/contracts/InfluencerMarketingContract.json", "utf8")
+);
+const influencerContractData = influencerMarketingContract.networks[NETWORK_ID];
 
-// panda coin contract
-// const lms = new web3.eth.Contract(CONTRACT_ABI, contractAddress, {
-//   gasPrice: "60000", // default gas price in wei, 20 gwei in this case
-// });
-// lms.setProvider(web3.currentProvider);
+const influencerContractLms = new web3.eth.Contract(influencerMarketingContract.abi, influencerContractData.address, {
+  gasPrice: "60000", // default gas price in wei, 20 gwei in this case
+});
+influencerContractLms.setProvider(web3.currentProvider);
+console.log("==== check influencer contract is deployed ====");
 
-// console.log(lms._address);
-console.log("==== check contract is deployed ====");
+
+const kolCoinContract = JSON.parse(
+  fs.readFileSync("./build/contracts/KOLCoin.json", "utf8")
+);
+const kolCData = kolCoinContract.networks[NETWORK_ID];
+
+const kolCLms = new web3.eth.Contract(kolCoinContract.abi, kolCData.address, {
+  gasPrice: "60000", // default gas price in wei, 20 gwei in this case
+});
+kolCLms.setProvider(web3.currentProvider);
+console.log("==== check kolC contract is deployed ====");
 
 // Connect to the MongoDB database
 mongoose
@@ -55,7 +64,7 @@ mongoose
     // routes
     require("./routes/index")(app);
     require("./routes/auth")(app);
-    require("./routes/creatorContract")(app);
+    require("./routes/creatorContract")(app, web3,  influencerContractLms, kolCLms);
 
     require('./routes/user.routes')(app);
 
